@@ -39,4 +39,12 @@ public class OrderSevice {
         order.setId(id);
         orderRepository.save(order);
     }
+
+    @Transactional
+    public void updateOrdersStatus(String orderNumber, Status status) {
+        List<Order> orders = orderRepository.findByNumber(orderNumber);
+        orders.forEach(o -> o.setStatus(status));
+        orderRepository.saveAll(orders);
+    }
+
 }
