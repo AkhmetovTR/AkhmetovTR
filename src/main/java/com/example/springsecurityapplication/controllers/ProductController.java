@@ -50,7 +50,6 @@ public class ProductController {
                     }
                 } else if(price.equals("sorted_by_descending_price")){
                     if(!contract.isEmpty()){
-                        System.out.println(contract);
                         if(contract.equals("furniture")){
                             model.addAttribute("search_product", productRepository.findByTitleAndCategoryOrderByPriceDesc(search.toLowerCase(), Float.parseFloat(ot), Float.parseFloat(Do), 1));
                         }else if (contract.equals("appliances")) {

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Список заказов</title>
+</head>
+<body>
+<h3>Список заказов</h3>
+<!--<form th:method="POST" th:action="@{/searchOrder}">
+<fieldset>
+  <legend>Выберите параметры фильтрации:</legend>
+  <label for="searchOrder">Поиск по наименованию</label>
+  <input type="text" id="searchOrder" name="searchOrder" th:value="*{value_searchOrder}">
+  <br>
+    <br>
+    <br>
+    <input type="submit" value="Найти">
+  </div>
+</fieldset>
+</form>
+<hr>
+<h3>Результат поиска, cортировки, фильтрации</h3>
+<div th:each="order : ${search_order}">
+  <h3 th:text="'Заказ №' + ${search_order.getNumber()}"></h3>
+  <img th:src="'/img/' + ${search_order.getProduct().getImageList()[0].getFileName()}" width="300px">
+  <p th:text="'Наименование: ' + ${search_order.getProduct().getTitle()}">
+  <p th:text="'Количество: ' + ${search_order.getCount()}">
+  <p th:text="'Цена: ' + ${search_order.getPrice()}">
+  <p th:text="'Дата заказа: ' + ${#temporals.format(search_order.getDateTime(), 'dd-MMM-yyyy')}"></p>
+  <p th:text="'Cтатус: ' + ${search_order.getStatus()}"></p>
+  <hr>
+</div>
+-->
+<hr>
+<div th:each="order : ${orders}">
+  <h3 th:text="'Заказ №' + ${order.getNumber()}"></h3>
+  <img th:src="'/img/' + ${order.getProduct().getImageList()[0].getFileName()}" width="300px">
+  <p th:text="'Наименование: ' + ${order.getProduct().getTitle()}">
+  <p th:text="'Количество: ' + ${order.getCount()}">
+  <p th:text="'Цена: ' + ${order.getPrice()}">
+  <p th:text="'Дата заказа: ' + ${#temporals.format(order.getDateTime(), 'dd-MMM-yyyy')}"></p>
+  <p th:text="'Cтатус: ' + ${order.getStatus()}"></p>
+  <!--<form method="post" th:action="@{/admin/setorderstatus/{id}(id=${order.getId()})}" th:object="${order}">
+  <label >Выберите статус: </label>
+    <button type="submit">Поставить статус</button>
+  </form>
+  -->
+<!--
+  <form method="post" th:action="@{/admin/setorderstatus/{id}(id=${order.getId()})}" th:object="${order}">
+    <label for="status">Выберите статус заказа: </label>
+    <select name="status" th:field="*{status}" id="status">
+    </select>
+    <button type="submit">Изменение статуса</button>
+  </form>
+-->
+</div>
+
+</body>
+</html>

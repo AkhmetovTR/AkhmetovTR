@@ -1,5 +1,6 @@
 package com.example.springsecurityapplication.controllers;
 
+import com.example.springsecurityapplication.enumm.Status;
 import com.example.springsecurityapplication.models.Category;
 import com.example.springsecurityapplication.models.Image;
 import com.example.springsecurityapplication.models.Product;
@@ -140,6 +141,7 @@ public class AdminController {
     public String editProduct(Model model, @PathVariable("id") int id){
         model.addAttribute("product", productService.getProductId(id));
         model.addAttribute("category", categoryRepository.findAll());
+        model.addAttribute("status", Status.values());
         return "product/editProduct";
 
 

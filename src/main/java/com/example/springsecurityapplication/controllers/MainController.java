@@ -9,6 +9,7 @@ import com.example.springsecurityapplication.repositories.CartRepository;
 import com.example.springsecurityapplication.repositories.OrderRepository;
 import com.example.springsecurityapplication.repositories.ProductRepository;
 import com.example.springsecurityapplication.security.PersonDetails;
+import com.example.springsecurityapplication.services.OrderSevice;
 import com.example.springsecurityapplication.services.PersonService;
 import com.example.springsecurityapplication.services.ProductService;
 import com.example.springsecurityapplication.util.PersonValidator;
@@ -37,14 +38,16 @@ public class MainController {
     private final CartRepository cartRepository;
 
     private final OrderRepository orderRepository;
+    private final OrderSevice orderService;
 
-    public MainController(ProductRepository productRepository, PersonValidator personValidator, PersonService personService, ProductService productService, CartRepository cartRepository, OrderRepository orderRepository) {
+    public MainController(ProductRepository productRepository, PersonValidator personValidator, PersonService personService, ProductService productService, CartRepository cartRepository, OrderRepository orderRepository, OrderSevice orderService) {
         this.productRepository = productRepository;
         this.personValidator = personValidator;
         this.personService = personService;
         this.productService = productService;
         this.cartRepository = cartRepository;
         this.orderRepository = orderRepository;
+        this.orderService = orderService;
     }
 
     @GetMapping("/person account")
@@ -233,6 +236,42 @@ public class MainController {
          model.addAttribute("orders", orderList);
          return "/user/orders";
     }
+    @GetMapping("/adminOrders")
+    public String getAllOrder(Model model){
+        List<Order> orderList = orderService.getAllOrder();
+        model.addAttribute("orders", orderList);
+       // model.addAttribute("orders", orderService.getAllOrder());
+        return "/administrator/adminOrders";
+    }
+
+    /*  @PostMapping("/searchOrder")
+    public String orderSearch(@RequestParam("searchOrder") String searchOrder, @RequestParam(value = "contract", required = false, defaultValue = "")String contract, Model model){
+        model.addAttribute("order", orderService.getAllOrder());
+
+        {
+            model.addAttribute("search_order", orderRepository.findByNumber(searchOrder));
+        }
+
+
+        return "/adminOrder/orders";
+
+    }
+
+
+    @GetMapping("/admin/setorderstatus/{id}")
+    public String editProduct(@ModelAttribute("order") Order order, @PathVariable("id") int id,Model model)
+    //public String setOrderStatus(@ModelAttribute("status") Status status,Order order,@PathVariable("id") int id)
+    {
+
+            orderService.updateOrder(id,order);
+
+            model.addAttribute("status", Status.Получен);
+
+
+        return "redirect:/adminOrders";
+    }
+*/
+
 
 
 }

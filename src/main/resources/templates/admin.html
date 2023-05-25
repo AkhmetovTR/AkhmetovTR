@@ -6,10 +6,11 @@
 </head>
 <body>
 <h1>Личный кабинет администратора</h1>
-<form method="post" action="/logout">
+<form method="post" th:action="@{/logout}">
     <button type="submit">Выйти из личного кабинета</button>
 </form>
 <a href="admin/product/add">Добавить товар</a>
+<a href="/adminOrders">Список заказов</a>
 <hr>
 <div th:each="product : ${products}">
     <p th:text="'Наименование: ' + ${product.getTitle()}"></p>
