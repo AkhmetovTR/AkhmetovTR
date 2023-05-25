@@ -5,6 +5,7 @@ import com.example.springsecurityapplication.models.Cart;
 import com.example.springsecurityapplication.models.Order;
 import com.example.springsecurityapplication.models.Person;
 import com.example.springsecurityapplication.models.Product;
+import com.example.springsecurityapplication.models.dto.OrderDto;
 import com.example.springsecurityapplication.repositories.CartRepository;
 import com.example.springsecurityapplication.repositories.OrderRepository;
 import com.example.springsecurityapplication.repositories.ProductRepository;
@@ -21,9 +22,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 public class MainController {
@@ -51,12 +50,12 @@ public class MainController {
     }
 
     @GetMapping("/person account")
-    public String index(Model model){
+    public String index(Model model) {
         // Получаем объект аутентификации -> с помощью SpringContextHolder обращаемся к контексту и на нем вызываем метод аутентификации. Из сессии текущего пользователя получаем объект, который был положен в данную сессию после аутентификации пользователя
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
         String role = personDetails.getPerson().getRole();
-        if(role.equals("ROLE_ADMIN")){
+        if (role.equals("ROLE_ADMIN")) {
             return "redirect:/admin";
         }
 //        System.out.println(personDetails.getPerson());
@@ -75,14 +74,14 @@ public class MainController {
 //    }
 
     @GetMapping("/registration")
-    public String registration(@ModelAttribute("person") Person person){
+    public String registration(@ModelAttribute("person") Person person) {
         return "registration";
     }
 
     @PostMapping("/registration")
-    public String resultRegistration(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult){
+    public String resultRegistration(@ModelAttribute("person") @Valid Person person, BindingResult bindingResult) {
         personValidator.validate(person, bindingResult);
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
             return "registration";
         }
         personService.register(person);
@@ -90,18 +89,18 @@ public class MainController {
     }
 
     @GetMapping("/person account/product/info/{id}")
-    public String infoProduct(@PathVariable("id") int id, Model model){
+    public String infoProduct(@PathVariable("id") int id, Model model) {
         model.addAttribute("product", productService.getProductId(id));
         return "/user/infoProduct";
     }
 
     @PostMapping("/person account/product/search")
-    public String productSearch(@RequestParam("search") String search, @RequestParam("ot") String ot, @RequestParam("do") String Do, @RequestParam(value = "price", required = false, defaultValue = "") String price, @RequestParam(value = "contract", required = false, defaultValue = "")String contract, Model model){
+    public String productSearch(@RequestParam("search") String search, @RequestParam("ot") String ot, @RequestParam("do") String Do, @RequestParam(value = "price", required = false, defaultValue = "") String price, @RequestParam(value = "contract", required = false, defaultValue = "") String contract, Model model) {
         model.addAttribute("products", productService.getAllProduct());
 
-        if(!ot.isEmpty() & !Do.isEmpty()){
-            if(!price.isEmpty()){
-                if(price.equals("sorted_by_ascending_price")) {
+        if (!ot.isEmpty() & !Do.isEmpty()) {
+            if (!price.isEmpty()) {
+                if (price.equals("sorted_by_ascending_price")) {
                     if (!contract.isEmpty()) {
                         if (contract.equals("furniture")) {
                             model.addAttribute("search_product", productRepository.findByTitleAndCategoryOrderByPriceAsc(search.toLowerCase(), Float.parseFloat(ot), Float.parseFloat(Do), 1));
@@ -113,17 +112,17 @@ public class MainController {
                     } else {
                         model.addAttribute("search_product", productRepository.findByTitleOrderByPriceAsc(search.toLowerCase(), Float.parseFloat(ot), Float.parseFloat(Do)));
                     }
-                } else if(price.equals("sorted_by_descending_price")){
-                    if(!contract.isEmpty()){
+                } else if (price.equals("sorted_by_descending_price")) {
+                    if (!contract.isEmpty()) {
                         System.out.println(contract);
-                        if(contract.equals("furniture")){
+                        if (contract.equals("furniture")) {
                             model.addAttribute("search_product", productRepository.findByTitleAndCategoryOrderByPriceDesc(search.toLowerCase(), Float.parseFloat(ot), Float.parseFloat(Do), 1));
-                        }else if (contract.equals("appliances")) {
+                        } else if (contract.equals("appliances")) {
                             model.addAttribute("search_product", productRepository.findByTitleAndCategoryOrderByPriceDesc(search.toLowerCase(), Float.parseFloat(ot), Float.parseFloat(Do), 3));
                         } else if (contract.equals("clothes")) {
                             model.addAttribute("search_product", productRepository.findByTitleAndCategoryOrderByPriceDesc(search.toLowerCase(), Float.parseFloat(ot), Float.parseFloat(Do), 2));
                         }
-                    }  else {
+                    } else {
                         model.addAttribute("search_product", productRepository.findByTitleOrderByPriceDesc(search.toLowerCase(), Float.parseFloat(ot), Float.parseFloat(Do)));
                     }
                 }
@@ -142,7 +141,7 @@ public class MainController {
     }
 
     @GetMapping("/cart/add/{id}")
-    public String addProductInCart(@PathVariable("id") int id, Model model){
+    public String addProductInCart(@PathVariable("id") int id, Model model) {
         // Получаем продукт по id
         Product product = productService.getProductId(id);
         // Извлекаем объект аутентифицированного пользователя
@@ -156,7 +155,7 @@ public class MainController {
     }
 
     @GetMapping("/cart")
-    public String cart(Model model){
+    public String cart(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
         // Извлекаем id пользователя из объекта
@@ -166,13 +165,13 @@ public class MainController {
         List<Product> productList = new ArrayList<>();
 
         // Получаем продукты из корзины по id товара
-        for (Cart cart: cartList) {
+        for (Cart cart : cartList) {
             productList.add(productService.getProductId(cart.getProductId()));
         }
 
         // Вычисление итоговой цена
         float price = 0;
-        for (Product product: productList) {
+        for (Product product : productList) {
             price += product.getPrice();
         }
 
@@ -182,7 +181,7 @@ public class MainController {
     }
 
     @GetMapping("/cart/delete/{id}")
-    public String deleteProductFromCart(Model model, @PathVariable("id") int id){
+    public String deleteProductFromCart(Model model, @PathVariable("id") int id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
         // Извлекаем id пользователя из объекта
@@ -191,7 +190,7 @@ public class MainController {
         List<Product> productList = new ArrayList<>();
 
         // Получаем продукты из корзины по id товара
-        for (Cart cart: cartList) {
+        for (Cart cart : cartList) {
             productList.add(productService.getProductId(cart.getProductId()));
         }
         cartRepository.deleteCartByProductId(id);
@@ -199,7 +198,7 @@ public class MainController {
     }
 
     @GetMapping("/order/create")
-    public String order(){
+    public String order() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
         // Извлекаем id пользователя из объекта
@@ -209,18 +208,18 @@ public class MainController {
         List<Product> productList = new ArrayList<>();
 
         // Получаем продукты из корзины по id товара
-        for (Cart cart: cartList) {
+        for (Cart cart : cartList) {
             productList.add(productService.getProductId(cart.getProductId()));
         }
 
         // Вычисление итоговой цена
         float price = 0;
-        for (Product product: productList) {
+        for (Product product : productList) {
             price += product.getPrice();
         }
 
         String uuid = UUID.randomUUID().toString();
-        for(Product product : productList){
+        for (Product product : productList) {
             Order newOrder = new Order(uuid, product, personDetails.getPerson(), 1, product.getPrice(), Status.Оформлен);
             orderRepository.save(newOrder);
             cartRepository.deleteCartByProductId(product.getId());
@@ -229,19 +228,29 @@ public class MainController {
     }
 
     @GetMapping("/orders")
-    public String orderUser(Model model){
+    public String orderUser(Model model) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         PersonDetails personDetails = (PersonDetails) authentication.getPrincipal();
         List<Order> orderList = orderRepository.findByPerson(personDetails.getPerson());
-         model.addAttribute("orders", orderList);
-         return "/user/orders";
-    }
-    @GetMapping("/adminOrders")
-    public String getAllOrder(Model model){
-        List<Order> orderList = orderService.getAllOrder();
         model.addAttribute("orders", orderList);
-       // model.addAttribute("orders", orderService.getAllOrder());
-        return "/administrator/adminOrders";
+        return "/user/orders";
+    }
+
+    @GetMapping("/adminOrders")
+    public String getAllOrder(Model model) {
+        List<Order> orderList = orderService.getAllOrder();
+
+        orderList.sort(Comparator.comparing(Order::getNumber));
+
+        model.addAttribute("orders", orderList);
+        model.addAttribute("statuses", Status.values());
+
+        return "/administrator/orders";
+    }
+
+    private PersonDetails getPersonId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return (PersonDetails) authentication.getPrincipal();
     }
 
     /*  @PostMapping("/searchOrder")
@@ -256,21 +265,16 @@ public class MainController {
         return "/adminOrder/orders";
 
     }
+*/
 
+    @PostMapping("/admin/setorderstatus/{number}")
+    public String editProduct(@ModelAttribute("newStatus") Status status, @PathVariable("number") String number, Model model) {
 
-    @GetMapping("/admin/setorderstatus/{id}")
-    public String editProduct(@ModelAttribute("order") Order order, @PathVariable("id") int id,Model model)
-    //public String setOrderStatus(@ModelAttribute("status") Status status,Order order,@PathVariable("id") int id)
-    {
-
-            orderService.updateOrder(id,order);
-
-            model.addAttribute("status", Status.Получен);
-
+        System.out.println("Пришёл статус: " + status);
+        orderService.updateOrdersStatus(number, status);
 
         return "redirect:/adminOrders";
     }
-*/
 
 
 

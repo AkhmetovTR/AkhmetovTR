@@ -45,14 +45,19 @@
     <button type="submit">Поставить статус</button>
   </form>
   -->
-<!--
+
   <form method="post" th:action="@{/admin/setorderstatus/{id}(id=${order.getId()})}" th:object="${order}">
     <label for="status">Выберите статус заказа: </label>
-    <select name="status" th:field="*{status}" id="status">
+
+    <select name="status" th:attr="*{statuses}" id="status">
+      <div th:each="status : ${statuses}">
+        <option th:text="${status.getName()}" th:value="${status.getId()}">
+      </div>
     </select>
+
     <button type="submit">Изменение статуса</button>
   </form>
--->
+
 </div>
 
 </body>
